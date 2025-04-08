@@ -1,0 +1,65 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches:
+      - sample-node-js
+      - node-main
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/sample-node-js'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: echo "Building the project"
+
+  test:
+    if: github.ref == 'refs/heads/sample-node-js'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies and test libs
+        run: |
+          npm install
+          npm install --save-dev jest supertest
+
+      - name: Run tests
+        run: |
+          echo "Running tests"
+          npm test
+
+  deploy:
+    if: github.ref == 'refs/heads/node-main'
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Deploy to production
+        run: echo "Deploying to production"
